@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib> // Necesario para malloc
+#include <cstdlib> 
 using namespace std;
 
 struct Empresa {
@@ -26,7 +26,7 @@ Empresa *raiz, *raiz2, *aux, *aux2;
 
 void insertarEmpresa(Empresa* &raiz, int codigoRNT, string nombre, int ano, int mes, int dia) {
     if (raiz == nullptr) {
-        raiz = (Empresa *)malloc(sizeof(Empresa)); // Reserva de memoria con malloc
+        raiz = (Empresa *)malloc(sizeof(Empresa)); 
         raiz->RNT = codigoRNT;
         raiz->nombre = nombre;
         raiz->ano = ano;
@@ -48,7 +48,7 @@ void insertarEmpresa(Empresa* &raiz, int codigoRNT, string nombre, int ano, int 
     }
 
     if (codigoRNT < aux2->RNT) {
-        aux2->izq = (Empresa *)malloc(sizeof(Empresa)); // Reserva de memoria con malloc
+        aux2->izq = (Empresa *)malloc(sizeof(Empresa)); 
         aux2->izq->RNT = codigoRNT;
         aux2->izq->nombre = nombre;
         aux2->izq->ano = ano;
@@ -57,7 +57,7 @@ void insertarEmpresa(Empresa* &raiz, int codigoRNT, string nombre, int ano, int 
         aux2->izq->izq = nullptr;
         aux2->izq->der = nullptr;
     } else {
-        aux2->der = (Empresa *)malloc(sizeof(Empresa)); // Reserva de memoria con malloc
+        aux2->der = (Empresa *)malloc(sizeof(Empresa)); 
         aux2->der->RNT = codigoRNT;
         aux2->der->nombre = nombre;
         aux2->der->ano = ano;
@@ -79,16 +79,16 @@ void eliminarNodo(Empresa* &raiz, int codigoRNT) {
         eliminarNodo(raiz->der, codigoRNT);
     } else {
         if (raiz->izq == nullptr && raiz->der == nullptr) {
-            free(raiz); // Liberar memoria con free
+            free(raiz);
             raiz = nullptr;
         } else if (raiz->izq == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->der;
-            free(temp); // Liberar memoria con free
+            free(temp); 
         } else if (raiz->der == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->izq;
-            free(temp); // Liberar memoria con free
+            free(temp); 
         } else {
             Empresa* temp = encontrarMinimo(raiz->der);
             raiz->RNT = temp->RNT;
@@ -112,16 +112,16 @@ void eliminarNodoEspejo(Empresa* &raiz, int codigoRNT) {
         eliminarNodoEspejo(raiz->izq, codigoRNT);
     } else {
         if (raiz->izq == nullptr && raiz->der == nullptr) {
-            free(raiz); // Liberar memoria con free
+            free(raiz); 
             raiz = nullptr;
         } else if (raiz->izq == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->der;
-            free(temp); // Liberar memoria con free
+            free(temp); 
         } else if (raiz->der == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->izq;
-            free(temp); // Liberar memoria con free
+            free(temp); 
         } else {
             Empresa* temp = encontrarMinimo(raiz->der);
             raiz->RNT = temp->RNT;

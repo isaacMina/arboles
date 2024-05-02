@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib> 
+#include <cstdlib>
 using namespace std;
 
 struct Empresa {
@@ -26,7 +26,7 @@ Empresa *raiz, *raiz2, *aux, *aux2;
 
 void insertarEmpresa(Empresa* &raiz, int codigoRNT, string nombre, int ano, int mes, int dia) {
     if (raiz == nullptr) {
-        raiz = (Empresa *)malloc(sizeof(Empresa)); 
+        raiz = (Empresa *)malloc(sizeof(Empresa));
         raiz->RNT = codigoRNT;
         raiz->nombre = nombre;
         raiz->ano = ano;
@@ -48,7 +48,7 @@ void insertarEmpresa(Empresa* &raiz, int codigoRNT, string nombre, int ano, int 
     }
 
     if (codigoRNT < aux2->RNT) {
-        aux2->izq = (Empresa *)malloc(sizeof(Empresa)); 
+        aux2->izq = (Empresa *)malloc(sizeof(Empresa));
         aux2->izq->RNT = codigoRNT;
         aux2->izq->nombre = nombre;
         aux2->izq->ano = ano;
@@ -57,7 +57,7 @@ void insertarEmpresa(Empresa* &raiz, int codigoRNT, string nombre, int ano, int 
         aux2->izq->izq = nullptr;
         aux2->izq->der = nullptr;
     } else {
-        aux2->der = (Empresa *)malloc(sizeof(Empresa)); 
+        aux2->der = (Empresa *)malloc(sizeof(Empresa));
         aux2->der->RNT = codigoRNT;
         aux2->der->nombre = nombre;
         aux2->der->ano = ano;
@@ -78,19 +78,19 @@ void eliminarNodo(Empresa* &raiz, int codigoRNT) {
     } else if (codigoRNT > raiz->RNT) {
         eliminarNodo(raiz->der, codigoRNT);
     } else {
-        if (raiz->izq == nullptr && raiz->der == nullptr) {
-            free(raiz);
-            raiz = nullptr;
-        } else if (raiz->izq == nullptr) {
+        if (raiz->izq == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->der;
-            free(temp); 
+            free(temp);
         } else if (raiz->der == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->izq;
-            free(temp); 
+            free(temp);
         } else {
-            Empresa* temp = encontrarMinimo(raiz->der);
+            Empresa* temp = raiz->der;
+            while (temp->izq != nullptr) {
+                temp = temp->izq;
+            }
             raiz->RNT = temp->RNT;
             raiz->nombre = temp->nombre;
             raiz->ano = temp->ano;
@@ -107,23 +107,23 @@ void eliminarNodoEspejo(Empresa* &raiz, int codigoRNT) {
     }
 
     if (codigoRNT < raiz->RNT) {
-        eliminarNodoEspejo(raiz->der, codigoRNT);
-    } else if (codigoRNT > raiz->RNT) {
         eliminarNodoEspejo(raiz->izq, codigoRNT);
+    } else if (codigoRNT > raiz->RNT) {
+        eliminarNodoEspejo(raiz->der, codigoRNT);
     } else {
-        if (raiz->izq == nullptr && raiz->der == nullptr) {
-            free(raiz); 
-            raiz = nullptr;
-        } else if (raiz->izq == nullptr) {
+        if (raiz->izq == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->der;
-            free(temp); 
+            free(temp);
         } else if (raiz->der == nullptr) {
             Empresa* temp = raiz;
             raiz = raiz->izq;
-            free(temp); 
+            free(temp);
         } else {
-            Empresa* temp = encontrarMinimo(raiz->der);
+            Empresa* temp = raiz->der;
+            while (temp->izq != nullptr) {
+                temp = temp->izq;
+            }
             raiz->RNT = temp->RNT;
             raiz->nombre = temp->nombre;
             raiz->ano = temp->ano;
@@ -132,13 +132,6 @@ void eliminarNodoEspejo(Empresa* &raiz, int codigoRNT) {
             eliminarNodoEspejo(raiz->der, temp->RNT);
         }
     }
-}
-
-Empresa* encontrarMinimo(Empresa* raiz) {
-    while (raiz->izq != nullptr) {
-        raiz = raiz->izq;
-    }
-    return raiz;
 }
 
 void preorden(Empresa* raiz) {
@@ -189,7 +182,6 @@ int main() {
 
         switch (opcion) {
             case 1:
-                // Insertar empresa
                 cout << "Ingrese el codigo RNT de la empresa: ";
                 cin >> codigoRNT;
                 cout << "Ingrese el nombre de la empresa: ";
@@ -206,33 +198,28 @@ int main() {
                 break;
 
             case 2:
-                // Eliminar empresa
                 cout << "Ingrese el codigo RNT de la empresa a eliminar: ";
                 cin >> codigoRNT;
                 eliminarNodo(raiz, codigoRNT);
                 break;
 
             case 3:
-                // Eliminar empresa espejo
                 cout << "Ingrese el codigo RNT de la empresa espejo a eliminar: ";
                 cin >> codigoRNT;
                 eliminarNodoEspejo(raiz2, codigoRNT);
                 break;
 
             case 4:
-                // Mostrar en preorden
                 cout << "Recorrido en Preorden:" << endl;
                 preorden(raiz);
                 break;
 
             case 5:
-                // Mostrar en inorden
                 cout << "Recorrido en Inorden:" << endl;
                 inorden(raiz);
                 break;
 
             case 6:
-                // Mostrar en postorden
                 cout << "Recorrido en Postorden:" << endl;
                 postorden(raiz);
                 break;

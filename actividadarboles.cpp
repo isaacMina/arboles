@@ -1,239 +1,234 @@
+//isaac mina Alomia
+//Yeimi Camila lopez
 #include <iostream>
 #include <cstdlib>
+
 using namespace std;
 
-struct Empresa {
-    int RNT;
-    string nombre;
-    int ano;
-    int mes;
-    int dia;
-    Empresa* izq;
-    Empresa* der;
-
-    Empresa(int codigoRNT, string nombreEmpresa, int anio, int mesEmpresa, int diaEmpresa) {
-        RNT = codigoRNT;
-        nombre = nombreEmpresa;
-        ano = anio;
-        mes = mesEmpresa;
-        dia = diaEmpresa;
-        izq = nullptr;
-        der = nullptr;
-    }
+struct NodoArbol {
+    int codigoRNT;
+    int fechaVencimiento;
+    NodoArbol* izquierda;
+    NodoArbol* derecha;
 };
 
-Empresa *raiz, *raiz2, *aux, *aux2;
+NodoArbol* crearNodo(int codigo, int fecha) {
+    NodoArbol* nuevoNodo = (NodoArbol*)malloc(sizeof(NodoArbol));
+    nuevoNodo->codigoRNT = codigo;
+    nuevoNodo->fechaVencimiento = fecha;
+    nuevoNodo->izquierda = NULL;
+    nuevoNodo->derecha = NULL;
+    return nuevoNodo;
+}
 
-void insertarEmpresa(Empresa* &raiz, int codigoRNT, string nombre, int ano, int mes, int dia) {
-    if (raiz == nullptr) {
-        raiz = (Empresa *)malloc(sizeof(Empresa));
-        raiz->RNT = codigoRNT;
-        raiz->nombre = nombre;
-        raiz->ano = ano;
-        raiz->mes = mes;
-        raiz->dia = dia;
-        raiz->izq = nullptr;
-        raiz->der = nullptr;
-        return;
+NodoArbol* insertarNodoCodigo(NodoArbol* raiz, int codigo, int fecha) {
+    if (raiz == NULL) {
+        return crearNodo(codigo, fecha);
     }
-
-    aux = raiz;
-    while (aux != nullptr) {
-        aux2 = aux;
-        if (codigoRNT < aux->RNT) {
-            aux = aux->izq;
-        } else {
-            aux = aux->der;
-        }
-    }
-
-    if (codigoRNT < aux2->RNT) {
-        aux2->izq = (Empresa *)malloc(sizeof(Empresa));
-        aux2->izq->RNT = codigoRNT;
-        aux2->izq->nombre = nombre;
-        aux2->izq->ano = ano;
-        aux2->izq->mes = mes;
-        aux2->izq->dia = dia;
-        aux2->izq->izq = nullptr;
-        aux2->izq->der = nullptr;
+    if (codigo < raiz->codigoRNT) {
+        raiz->izquierda = insertarNodoCodigo(raiz->izquierda, codigo, fecha);
     } else {
-        aux2->der = (Empresa *)malloc(sizeof(Empresa));
-        aux2->der->RNT = codigoRNT;
-        aux2->der->nombre = nombre;
-        aux2->der->ano = ano;
-        aux2->der->mes = mes;
-        aux2->der->dia = dia;
-        aux2->der->izq = nullptr;
-        aux2->der->der = nullptr;
+        raiz->derecha = insertarNodoCodigo(raiz->derecha, codigo, fecha);
     }
+    return raiz;
 }
 
-void eliminarNodo(Empresa* &raiz, int codigoRNT) {
-    if (raiz == nullptr) {
-        return;
+NodoArbol* insertarNodoFecha(NodoArbol* raiz, int codigo, int fecha) {
+    if (raiz == NULL) {
+        return crearNodo(codigo, fecha);
     }
-
-    if (codigoRNT < raiz->RNT) {
-        eliminarNodo(raiz->izq, codigoRNT);
-    } else if (codigoRNT > raiz->RNT) {
-        eliminarNodo(raiz->der, codigoRNT);
+    if (fecha < raiz->fechaVencimiento) {
+        raiz->izquierda = insertarNodoFecha(raiz->izquierda, codigo, fecha);
     } else {
-        if (raiz->izq == nullptr) {
-            Empresa* temp = raiz;
-            raiz = raiz->der;
-            free(temp);
-        } else if (raiz->der == nullptr) {
-            Empresa* temp = raiz;
-            raiz = raiz->izq;
-            free(temp);
-        } else {
-            Empresa* temp = raiz->der;
-            while (temp->izq != nullptr) {
-                temp = temp->izq;
-            }
-            raiz->RNT = temp->RNT;
-            raiz->nombre = temp->nombre;
-            raiz->ano = temp->ano;
-            raiz->mes = temp->mes;
-            raiz->dia = temp->dia;
-            eliminarNodo(raiz->der, temp->RNT);
-        }
+        raiz->derecha = insertarNodoFecha(raiz->derecha, codigo, fecha);
+    }
+    return raiz;
+}
+
+void insertarNodoPrincipalCodigo(NodoArbol*& raiz) {
+    int codigo, fecha;
+    cout << "Ingrese el codigo RNT del nodo: ";
+    cin >> codigo;
+    cout << "Ingrese la fecha de vencimiento del RNT del nodo (AAAAMMDD): ";
+    cin >> fecha;
+    raiz = insertarNodoCodigo(raiz, codigo, fecha);
+    cout << "Nodo insertado correctamente." << endl;
+}
+
+void insertarNodoPrincipalFecha(NodoArbol*& raiz) {
+    int codigo, fecha;
+    cout << "Ingrese el codigo RNT del nodo: ";
+    cin >> codigo;
+    cout << "Ingrese la fecha de vencimiento del RNT del nodo (AAAAMMDD): ";
+    cin >> fecha;
+    raiz = insertarNodoFecha(raiz, codigo, fecha);
+    cout << "Nodo insertado correctamente." << endl;
+}
+
+void preorden(NodoArbol* raiz) {
+    if (raiz != NULL) {
+        cout << "Codigo RNT: " << raiz->codigoRNT << ", Fecha de vencimiento: " << raiz->fechaVencimiento << endl;
+        preorden(raiz->izquierda);
+        preorden(raiz->derecha);
     }
 }
 
-void eliminarNodoEspejo(Empresa* &raiz, int codigoRNT) {
-    if (raiz == nullptr) {
-        return;
+void inorden(NodoArbol* raiz) {
+    if (raiz != NULL) {
+        inorden(raiz->izquierda);
+        cout << "Codigo RNT: " << raiz->codigoRNT << ", Fecha de vencimiento: " << raiz->fechaVencimiento << endl;
+        inorden(raiz->derecha);
     }
+}
 
-    if (codigoRNT < raiz->RNT) {
-        eliminarNodoEspejo(raiz->izq, codigoRNT);
-    } else if (codigoRNT > raiz->RNT) {
-        eliminarNodoEspejo(raiz->der, codigoRNT);
+void posorden(NodoArbol* raiz) {
+    if (raiz != NULL) {
+        posorden(raiz->izquierda);
+        posorden(raiz->derecha);
+        cout << "Codigo RNT: " << raiz->codigoRNT << ", Fecha de vencimiento: " << raiz->fechaVencimiento << endl;
+    }
+}
+
+NodoArbol* eliminarNodoCodigo(NodoArbol* raiz, int codigo) {
+    if (raiz == NULL) {
+        return raiz;
+    }
+    if (codigo < raiz->codigoRNT) {
+        raiz->izquierda = eliminarNodoCodigo(raiz->izquierda, codigo);
+    } else if (codigo > raiz->codigoRNT) {
+        raiz->derecha = eliminarNodoCodigo(raiz->derecha, codigo);
     } else {
-        if (raiz->izq == nullptr) {
-            Empresa* temp = raiz;
-            raiz = raiz->der;
-            free(temp);
-        } else if (raiz->der == nullptr) {
-            Empresa* temp = raiz;
-            raiz = raiz->izq;
-            free(temp);
-        } else {
-            Empresa* temp = raiz->der;
-            while (temp->izq != nullptr) {
-                temp = temp->izq;
-            }
-            raiz->RNT = temp->RNT;
-            raiz->nombre = temp->nombre;
-            raiz->ano = temp->ano;
-            raiz->mes = temp->mes;
-            raiz->dia = temp->dia;
-            eliminarNodoEspejo(raiz->der, temp->RNT);
+        if (raiz->izquierda == NULL) {
+            NodoArbol* temp = raiz->derecha;
+            free(raiz);
+            return temp;
+        } else if (raiz->derecha == NULL) {
+            NodoArbol* temp = raiz->izquierda;
+            free(raiz);
+            return temp;
         }
+        NodoArbol* temp = raiz->derecha;
+        while (temp->izquierda != NULL) {
+            temp = temp->izquierda;
+        }
+        raiz->codigoRNT = temp->codigoRNT;
+        raiz->fechaVencimiento = temp->fechaVencimiento;
+        raiz->derecha = eliminarNodoCodigo(raiz->derecha, temp->codigoRNT);
     }
+    return raiz;
 }
 
-void preorden(Empresa* raiz) {
-    if (raiz == nullptr) return;
-    cout << "RNT: " << raiz->RNT << ", Nombre: " << raiz->nombre << ", Fecha Vencimiento: " << raiz->ano << "-" << raiz->mes << "-" << raiz->dia << endl;
-    preorden(raiz->izq);
-    preorden(raiz->der);
+NodoArbol* eliminarNodoFecha(NodoArbol* raiz, int fecha) {
+    if (raiz == NULL) {
+        return raiz;
+    }
+    if (fecha < raiz->fechaVencimiento) {
+        raiz->izquierda = eliminarNodoFecha(raiz->izquierda, fecha);
+    } else if (fecha > raiz->fechaVencimiento) {
+        raiz->derecha = eliminarNodoFecha(raiz->derecha, fecha);
+    } else {
+        if (raiz->izquierda == NULL) {
+            NodoArbol* temp = raiz->derecha;
+            free(raiz);
+            return temp;
+        } else if (raiz->derecha == NULL) {
+            NodoArbol* temp = raiz->izquierda;
+            free(raiz);
+            return temp;
+        }
+        NodoArbol* temp = raiz->derecha;
+        while (temp->izquierda != NULL) {
+            temp = temp->izquierda;
+        }
+        raiz->codigoRNT = temp->codigoRNT;
+        raiz->fechaVencimiento = temp->fechaVencimiento;
+        raiz->derecha = eliminarNodoFecha(raiz->derecha, temp->fechaVencimiento);
+    }
+    return raiz;
 }
 
-void inorden(Empresa* raiz) {
-    if (raiz == nullptr) return;
-    inorden(raiz->izq);
-    cout << "RNT: " << raiz->RNT << ", Nombre: " << raiz->nombre << ", Fecha Vencimiento: " << raiz->ano << "-" << raiz->mes << "-" << raiz->dia << endl;
-    inorden(raiz->der);
-}
-
-void postorden(Empresa* raiz) {
-    if (raiz == nullptr) return;
-    postorden(raiz->izq);
-    postorden(raiz->der);
-    cout << "RNT: " << raiz->RNT << ", Nombre: " << raiz->nombre << ", Fecha Vencimiento: " << raiz->ano << "-" << raiz->mes << "-" << raiz->dia << endl;
-}
-
-int menu() {
-    int opcion;
-    cout << "\nMenu:" << endl;
-    cout << "1. Insertar empresa" << endl;
-    cout << "2. Eliminar empresa" << endl;
-    cout << "3. Eliminar empresa espejo" << endl;
-    cout << "4. Mostrar en preorden" << endl;
-    cout << "5. Mostrar en inorden" << endl;
-    cout << "6. Mostrar en postorden" << endl;
-    cout << "7. Salir" << endl;
-    cout << "Ingrese una opcion: ";
-    cin >> opcion;
-    return opcion;
+void liberarArbol(NodoArbol* raiz) {
+    if (raiz != NULL) {
+        liberarArbol(raiz->izquierda);
+        liberarArbol(raiz->derecha);
+        free(raiz);
+    }
 }
 
 int main() {
-    raiz = nullptr;
+    NodoArbol* raizPrincipalCodigo = NULL;
+    NodoArbol* raizPrincipalFecha = NULL;
 
-    int opcion, codigoRNT;
-    string nombre;
-    int ano, mes, dia;
-
+    int opcion;
     do {
-        opcion = menu();
+        cout << "\n1. Insertar nodo por codigo" << endl;
+        cout << "2. Insertar nodo por fecha" << endl;
+        cout << "3. Recorrer en preorden (por codigo)" << endl;
+        cout << "4. Recorrer en inorden (por codigo)" << endl;
+        cout << "5. Recorrer en posorden (por codigo)" << endl;
+        cout << "6. Recorrer en preorden (por fecha)" << endl;
+        cout << "7. Recorrer en inorden (por fecha)" << endl;
+        cout << "8. Recorrer en posorden (por fecha)" << endl;
+        cout << "9. Eliminar nodo por codigo" << endl;
+        cout << "10. Eliminar nodo por fecha" << endl;
+        cout << "11. Salir" << endl;
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
 
-        switch (opcion) {
+        switch(opcion) {
             case 1:
-                cout << "Ingrese el codigo RNT de la empresa: ";
-                cin >> codigoRNT;
-                cout << "Ingrese el nombre de la empresa: ";
-                cin.ignore();
-                getline(cin, nombre);
-                cout << "Ingrese el año de vencimiento del RNT: ";
-                cin >> ano;
-                cout << "Ingrese el mes de vencimiento del RNT: ";
-                cin >> mes;
-                cout << "Ingrese el dia de vencimiento del RNT: ";
-                cin >> dia;
-
-                insertarEmpresa(raiz, codigoRNT, nombre, ano, mes, dia);
+                insertarNodoPrincipalCodigo(raizPrincipalCodigo);
                 break;
-
             case 2:
-                cout << "Ingrese el codigo RNT de la empresa a eliminar: ";
-                cin >> codigoRNT;
-                eliminarNodo(raiz, codigoRNT);
+                insertarNodoPrincipalFecha(raizPrincipalFecha);
                 break;
-
             case 3:
-                cout << "Ingrese el codigo RNT de la empresa espejo a eliminar: ";
-                cin >> codigoRNT;
-                eliminarNodoEspejo(raiz2, codigoRNT);
+                cout << "Recorrido preorden del arbol principal (por codigo):" << endl;
+                preorden(raizPrincipalCodigo);
                 break;
-
             case 4:
-                cout << "Recorrido en Preorden:" << endl;
-                preorden(raiz);
+                cout << "Recorrido inorden del arbol principal (por codigo):" << endl;
+                inorden(raizPrincipalCodigo);
                 break;
-
             case 5:
-                cout << "Recorrido en Inorden:" << endl;
-                inorden(raiz);
+                cout << "Recorrido posorden del arbol principal (por codigo):" << endl;
+                posorden(raizPrincipalCodigo);
                 break;
-
             case 6:
-                cout << "Recorrido en Postorden:" << endl;
-                postorden(raiz);
+                cout << "Recorrido preorden del arbol principal (por fecha):" << endl;
+                preorden(raizPrincipalFecha);
                 break;
-
             case 7:
-                cout << "Saliendo..." << endl;
+                cout << "Recorrido inorden del arbol principal (por fecha):" << endl;
+                inorden(raizPrincipalFecha);
                 break;
-
+            case 8:
+                cout << "Recorrido posorden del arbol principal (por fecha):" << endl;
+                posorden(raizPrincipalFecha);
+                break;
+            case 9:
+                int codigoEliminar;
+                cout << "Ingrese el codigo RNT del nodo a eliminar: ";
+                cin >> codigoEliminar;
+                raizPrincipalCodigo = eliminarNodoCodigo(raizPrincipalCodigo, codigoEliminar);
+                cout << "Nodo eliminado correctamente." << endl;
+                break;
+            case 10:
+                int fechaEliminar;
+                cout << "Ingrese la fecha de vencimiento del nodo a eliminar (AAAAMMDD): ";
+                cin >> fechaEliminar;
+                raizPrincipalFecha = eliminarNodoFecha(raizPrincipalFecha, fechaEliminar);
+                cout << "Nodo eliminado correctamente." << endl;
+                break;
+            case 11:
+                cout << "Saliendo del programa..." << endl;
+                liberarArbol(raizPrincipalCodigo);
+                liberarArbol(raizPrincipalFecha);
+                break;
             default:
-                cout << "Opcion invalida. Por favor ingrese una opcion valida." << endl;
-                break;
+                cout << "Opcion invalida. Intente de nuevo." << endl;
         }
-
-    } while (opcion != 7);
+    } while (opcion != 11);
 
     return 0;
 }
